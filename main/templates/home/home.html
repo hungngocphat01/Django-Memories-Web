@@ -1,7 +1,33 @@
 {% extends 'base/base.html' %}
+{% load custom_tags %}
 
 {% block content %}
-    <div class="container pt-4">
-        <h1>Hello</h1>
+    <div class="container-fluid bg-primary">
+        <div class="container py-5 text-light">
+            <span class="h3">{{ user.first_name }} {{ user.last_name }}'s memorable places</span>
+        </div>
+    </div>
+    {% include 'base/errors.html' %}
+    <div class="container py-4 h-100 w-100 d-flex justify-content-center">
+        {% if posts %}
+            <div class="row">
+                {% for post in posts %}
+                    <div class="col-md-6 col-lg-3 d-flex">
+                        <div class="card mx-lg-3 my-3 flex-1" style="width:18rem;">
+                          <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" class="card-img-top crop-img" alt="">
+                          <div class="card-body">
+                            <h5 class="card-title">{{ post.title | content_shorten:20 }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted ">{{ post.place_name | content_shorten:30 }}</h6>
+                            <p class="card-text">{{ post.content | content_shorten:100}}</p>
+                          </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="flex-1">
+                <p>You have no memories yet. Let's add one!</p>
+            </div>
+        {% endif %}
     </div>
 {% endblock content %}
