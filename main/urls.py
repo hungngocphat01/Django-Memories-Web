@@ -7,5 +7,6 @@ app_name = 'app'
 urlpatterns = [
     path('', login_required(HomeView.as_view()), name='home'),
     path('login', LoginView.as_view(), name='login'),
-    path('logout', LogoutView.as_view(), name='logout')
+    path('logout', LogoutView.as_view(), name='logout'),
+    path('post_cr', login_required(PostCreateEditView.as_view()), name='post_create_edit')
 ]
