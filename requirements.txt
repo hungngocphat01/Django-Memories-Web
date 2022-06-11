@@ -3,3 +3,4 @@ python-dotenv==0.20.0
 requests==2.27.1
 social-auth-app-django==5.0.0
 django-bootstrap5==21.3
+django-location-field==2.1.0

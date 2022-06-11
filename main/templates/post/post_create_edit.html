@@ -2,10 +2,14 @@
 {% load django_bootstrap5 %}
 
 {% block content %}
+    <div class="container-fluid bg-primary">
+        <div class="container py-5 text-light">
+            <h3>{{ action }} post</h3>
+        </div>
+    </div>
+    {% include 'base/errors.html' %}
     <div class="container pt-3">
-        <h1>Post create</h1>
-
-        <div>
+        <div class="py-4">
             <form action="" method="post">
                 <div>
                 </div>
@@ -15,5 +19,11 @@
             </form>
         </div>
     </div>
+
+    <script>
+        $("document").ready(function() {
+            $("#id_location").hide();
+        });
+    </script>
 {% endblock content %}
 

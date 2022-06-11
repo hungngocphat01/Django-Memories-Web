@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from location_field.models.plain import PlainLocationField
 
 
 class Profile(models.Model):
@@ -24,4 +25,8 @@ class Post(models.Model):
                              to=User, on_delete=models.CASCADE)
     title = models.CharField(verbose_name='Post title', max_length=100)
     content = models.TextField(verbose_name='Post content')
-    date_created = models.DateField(verbose_name='Date created', auto_now_add=True)
+    place_name = models.CharField(verbose_name='Place name', max_length=255, default='')
+    location = PlainLocationField(
+        based_fields=['place_name'], default='10.762622,106.660172')
+    date_created = models.DateField(
+        verbose_name='Date created', auto_now_add=True)
