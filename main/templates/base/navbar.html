@@ -1,10 +1,31 @@
-<nav class="navbar navbar-dark bg-dark text-light">
-    <div class="container justify-content-between">
-        <a class="navbar-brand">Memories</a>
-        <div>
-            {% if current_user.is_authenticated %}
-                ABC
-            {% endif %}
-        </div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">Navbar</a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" role="button" href="{% url 'app:home' %}">Home</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" role="button" href="{% url 'app:post_create_edit' %}">Add new post</a>
+          </li>
+      </ul>
+
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              {{ user.first_name }} {{ user.last_name }}
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{% url 'app:logout' %}">Log out</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
     </div>
-</nav>
+  </nav>
