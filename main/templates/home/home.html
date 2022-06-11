@@ -10,11 +10,11 @@
     {% include 'base/errors.html' %}
     <div class="container py-4 h-100 w-100 d-flex justify-content-center">
         {% if posts %}
-            <div class="row">
+            <div class="grid-container">
                 {% for post in posts %}
-                    <div class="col-md-6 col-lg-3 d-flex">
+                    <div class="grid-item d-flex">
                         <div class="card mx-lg-3 my-3 flex-1" style="width:18rem;">
-                          <img src="https://images.unsplash.com/photo-1561154464-82e9adf32764?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60" class="card-img-top crop-img" alt="">
+                          <img src="{{ post.image.url }}" class="card-img-top crop-img" alt="">
                           <div class="card-body">
                             <h5 class="card-title">{{ post.title | content_shorten:20 }}</h5>
                             <h6 class="card-subtitle mb-2 text-muted ">{{ post.place_name | content_shorten:30 }}</h6>
