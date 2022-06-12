@@ -1,3 +1,4 @@
+from django.conf import settings
 import django.contrib.messages as messages
 from django.contrib.auth import logout as auth_logout
 from django.core.exceptions import *
@@ -25,7 +26,9 @@ class HomeView(View):
                 'title': 'Home',
                 'current_user': current_user
             })
-        except Exception:
+        except Exception as e:
+            if settings.DEBUG:
+                raise e
             return HttpResponseServerError()
 
 
@@ -38,11 +41,18 @@ class LoginView(View):
     def get(self, request: HttpRequest):
         try:
             current_user = request.user
+
+            # Don't let the user access the login page if they has logged in
+            if current_user.is_authenticated:
+                return redirect('app:home')
+
             return render(request, self.template_name, {
                 'title': 'Login',
                 'current_user': current_user
             })
-        except:
+        except Exception as e:
+            if settings.DEBUG:
+                raise e
             return HttpResponseServerError()
 
 
@@ -55,7 +65,9 @@ class LogoutView(View):
         try:
             auth_logout(request)
             return redirect('app:login')
-        except:
+        except Exception as e:
+            if settings.DEBUG:
+                raise e
             return HttpResponseServerError()
 
 
@@ -76,7 +88,9 @@ class PostCreateEditView(View):
                 'title': 'New post',
                 'current_user': current_user
             })
-        except:
+        except Exception as e:
+            if settings.DEBUG:
+                raise e
             return HttpResponseServerError()
 
     def post(self, request: HttpRequest):
@@ -104,12 +118,17 @@ class PostCreateEditView(View):
                     messages.error(
                         request, f'Error in field {field}: {render_msg}')
             # Redirect to same page
-            return redirect('app:post_create_edit')
-        except:
+            return redirect('app:post_create')
+        except Exception as e:
+            if settings.DEBUG:
+                raise e
             return HttpResponseServerError()
 
 
 class PostView(View):
+    """
+    View presenting content of a post
+    """
     template_name = 'post/view_post.html'
 
     def get(self, request: HttpRequest, post_id: int):
@@ -121,9 +140,11 @@ class PostView(View):
 
             # Render to client
             return render(request, self.template_name, {
+                'title': post.title,
+                'current_user': current_user,
                 'post': post
             })
         except ObjectDoesNotExist:
             raise Http404()
-        except:
+        except Exception as e:
             return HttpResponseServerError()
