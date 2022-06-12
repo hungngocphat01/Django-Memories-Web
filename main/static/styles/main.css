@@ -23,6 +23,7 @@ html, body {
 
 .grid-container {
   display: grid;
+  height: fit-content;
   grid-template-columns: repeat(auto-fill, 20rem);
   column-gap: 30px;
   row-gap: 30px;

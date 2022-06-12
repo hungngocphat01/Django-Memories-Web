@@ -1,4 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <!--TEXT LOGO-->
     <div class="container">
       <a class="navbar-brand logo-text" href="#">Memories</a>
 
@@ -6,9 +7,10 @@
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      
+      <!--NAVBAR-->
       <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
         {% if current_user.is_authenticated %}
+        <!--RIGHT PART-->
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
             <a class="nav-link" role="button" href="{% url 'app:home' %}">Home</a>
@@ -18,10 +20,12 @@
           </li>
         </ul>
 
+        <!--LEFT PART-->
         <ul class="navbar-nav ms-auto">
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                {{ user.first_name }} {{ user.last_name }}
+                <span class="mx-1">{{ user.first_name }} {{ user.last_name }}</span>
+                <img height=30 src="{{ user.profile.avatar_url }}">
               </a>
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="{% url 'app:logout' %}">Log out</a></li>
