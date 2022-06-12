@@ -1,5 +1,6 @@
+import traceback
 import facebook
-import json
+import logging
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth import user_logged_in
@@ -7,6 +8,9 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from location_field.models.plain import PlainLocationField
 from social_django.models import UserSocialAuth
+
+
+logger = logging.getLogger(__name__)
 
 
 class Profile(models.Model):
@@ -19,6 +23,32 @@ class Profile(models.Model):
             return self.avatar_link
         else:
             return ''
+
+    @staticmethod
+    def update_avatar_url(user):
+        try:
+            # Get user access token from server database
+            auth = UserSocialAuth.objects.get(user_id=user.id)
+            auth_extra_data = auth.extra_data
+            access_token = auth_extra_data['access_token']
+            fb_user_id = auth_extra_data['id']
+            logger.info('Facebook user ID acquired')
+
+            # Intialize facebook graph API
+            graph = facebook.GraphAPI(access_token=access_token)
+            # Get avatar information
+            avatar_data = graph.get_object(id=fb_user_id, fields='picture')
+            avatar_link = avatar_data['picture']['data']['url']
+            logger.info('Avatar link acquired')
+
+            # Save avatar information to server database
+            profile = Profile.objects.get(user=user)
+            profile.avatar_link = avatar_link
+            profile.save()
+        except Exception as e:
+            logger.error('Cannot fetch profile picture link for user: %d', user.id)
+            logger.error(traceback.format_exc())
+
 
 # Database trigger when a new user is created
 @receiver(post_save, sender=User)
@@ -33,23 +63,8 @@ def create_profile_signal(sender, instance, created, **kwargs):
 
 # When user logs in: update profile image path
 @receiver(user_logged_in)
-def update_profile_pic(sender, request, user, **kwargs):
-    # Get user access token from server database
-    auth = UserSocialAuth.objects.get(user_id=user.id)
-    auth_extra_data = auth.extra_data
-    access_token = auth_extra_data['access_token']
-    fb_user_id = auth_extra_data['id']
-    
-    # Intialize facebook graph API
-    graph = facebook.GraphAPI(access_token=access_token)
-    # Get avatar information
-    avatar_data = graph.get_object(id=fb_user_id, fields='picture')
-    avatar_link = avatar_data['picture']['data']['url']
-
-    # Save avatar information to server database
-    profile = Profile.objects.get(user=user)
-    profile.avatar_link = avatar_link
-    profile.save()
+def login_update_profile_pic(sender, request, user, **kwargs):
+    Profile.update_avatar_url(user)
 
 
 class Post(models.Model):
@@ -74,7 +89,17 @@ class Post(models.Model):
         return 'https://picsum.photos/1000/500'
 
 
+# Database trigger when a post is deleted: delete corresponding blob on S3
 @receiver(post_delete, sender=Post)
 def auto_delete_s3_post(sender, instance, **kwargs):
     if instance.image:
         instance.image.delete(save=False)
+
+
+
+# Updates the user profile picture after user authentication
+def profile_picture_update_handler(strategy, user, response, details,
+                         is_new=False,*args,**kwargs):
+    logger.info('End of authentication process')
+    logger.info(f'User id: {user}')
+    Profile.update_avatar_url(user)
