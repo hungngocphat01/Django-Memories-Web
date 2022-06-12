@@ -9,7 +9,7 @@ from location_field.models.plain import PlainLocationField
 
 class Profile(models.Model):
     user = models.OneToOneField(to=User, on_delete=models.CASCADE)
-    avatar = models.ImageField(upload_to='avatar')
+    avatar_url = models.TextField(null=True)
 
 
 # Database trigger when a new user is created
@@ -27,7 +27,7 @@ class Post(models.Model):
                              to=User, on_delete=models.CASCADE)
     title = models.CharField(verbose_name='Post title', max_length=100)
     content = models.TextField(verbose_name='Post content')
-    image = models.ImageField(verbose_name='Image', upload_to='post_images', null=True)
+    image = models.ImageField(verbose_name='Image', upload_to='post_images', null=True, blank=True)
     place_name = models.CharField(verbose_name='Place name', max_length=255, default='')
     location = PlainLocationField(
         based_fields=['place_name'], default='10.762622,106.660172')
@@ -35,7 +35,15 @@ class Post(models.Model):
         verbose_name='Date created', auto_now_add=True)
 
 
-@receiver(post_delete)
+    @property
+    def img_url(self):
+        # Returns random image if this post is not attached with any
+        if self.image:
+            return self.image.url
+        return 'https://picsum.photos/1000/500'
+
+
+@receiver(post_delete, sender=Post)
 def auto_delete_s3_post(sender, instance, **kwargs):
     if instance.image:
         instance.image.delete(save=False)
