@@ -1,3 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+html, body {
+  height: 100%;
+}
+
+.logo-text {
+  font-family: Pacifico;
+}
+
 .vertical-center {
     margin: 0;
     position: absolute;
@@ -13,12 +23,24 @@
 
 .grid-container {
   display: grid;
-  column-gap: 50px;
-  row-gap: 50px;
+  grid-template-columns: repeat(auto-fill, 20rem);
+  column-gap: 30px;
+  row-gap: 30px;
+  width: 100%;
+  justify-content: center;
 }
 
 .grid-item {
   display: inline-grid;
+}
+
+.main-hero {
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
 }
 
 .hero {
@@ -50,4 +72,17 @@
 #leaflet-container {
   width: 100%;
   height: 300px;
+}
+
+#quote-content {
+  font-style: italic;
+  text-align: center;
+}
+
+#quote-author {
+  text-align: right;
+}
+
+.text-justify {
+  text-align: justify;
 }

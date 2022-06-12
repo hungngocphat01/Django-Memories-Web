@@ -1,12 +1,28 @@
 {% extends 'base/base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="container py-5">
-    <h1>Memories</h1>
-    <p class="h2">a site to store places that you remember</p>
-    <a class="btn btn-primary btn-sm " href="{% url "social:begin" "facebook" %}?next=/" role="button">
-        <i class="bi bi-facebook"></i>
-        <span>Login with Facebook</span>
-    </a>
-</div>
+    <div class="main-hero">
+        <img src="https://picsum.photos/1000/500?blur=5" class="flex-1 hero-img"/>
+        <div class="hero-text">
+            
+            <h1 class="logo-text mx-3">Memories</h1>
+            <h4 class="mx-3">A website where you can store places that you recall</h4>
+
+            <div class="mx-3 my-4">
+                <div id="quote-content">
+                </div>
+
+                <div id="quote-author">
+                </div>
+            </div>
+
+            <a class="btn btn-primary btn-sm" href="{% url "social:begin" "facebook" %}?next=/" role="button">
+                <i class="bi bi-facebook"></i>
+                <span>Getting started with Facebook</span>
+            </a>
+        </div>
+    </div>
+
+    <script src="{% static 'js/quote.js' %}"></script>
 {% endblock content %}
