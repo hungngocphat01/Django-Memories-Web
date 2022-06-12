@@ -28,6 +28,7 @@ Features:
 Following environment variables must be declared in a file called `.env` placed in the same directory as the `manage.py` file.
 
 ```
+DATABASE_URL=
 DJANGO_DEBUG=
 DJANGO_SECRET=
 SOCIAL_AUTH_FACEBOOK_KEY=
@@ -36,11 +37,6 @@ AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
 AWS_STORAGE_BUCKET_NAME=
 AWS_S3_REGION_NAME=
-DB_NAME=
-DB_USER=
-DB_PASSWD=
-DB_HOST=
-DB_PORT=
 ```
 
 ## Run in development mode

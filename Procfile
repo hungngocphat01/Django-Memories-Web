@@ -1,0 +1,1 @@
+web: gunicorn --chdir source memories.wsgi --log-file -
