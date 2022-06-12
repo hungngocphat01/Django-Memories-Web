@@ -6,3 +6,6 @@ django-bootstrap5==21.3
 django-location-field==2.1.0
 django-storages==1.12.3
 boto3==1.24.7
+psycopg2==2.9.3
+facebook-sdk==3.1.0
+Pillow==9.1.1

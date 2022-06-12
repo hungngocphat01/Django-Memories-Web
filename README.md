@@ -25,9 +25,10 @@ Features:
 
 ## Environment
 
-Following environment variables must be declared in a file called `.env` placed in the root directory of this repo.
+Following environment variables must be declared in a file called `.env` placed in the same directory as the `manage.py` file.
 
 ```
+DJANGO_DEBUG=
 DJANGO_SECRET=
 SOCIAL_AUTH_FACEBOOK_KEY=
 SOCIAL_AUTH_FACEBOOK_SECRET=
@@ -35,4 +36,34 @@ AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
 AWS_STORAGE_BUCKET_NAME=
 AWS_S3_REGION_NAME=
+DB_NAME=
+DB_USER=
+DB_PASSWD=
+DB_HOST=
+DB_PORT=
+```
+
+## Run in development mode
+
+Create new database:
+
+```
+psql ...
+CREATE DATABASE ...;
+exit;
+```
+
+Initialize project:
+
+```
+cd source 
+pip install -r requirements.txt 
+python manage.py makemigrations main 
+python manage.py migrate 
+```
+
+Run application 
+
+```
+python manage.py runserver
 ```

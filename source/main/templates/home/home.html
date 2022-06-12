@@ -33,7 +33,7 @@
                           <img src="{{ post.img_url }}" class="card-img-top crop-img" alt="">
                           <div class="card-body">
                             <p>
-                                <a class="h5 text-decoration-none card-title" href="{% url 'app:post_view' post.id %}">{{ post.title | content_shorten:20 }}</a>
+                                <a class="h5 text-decoration-none card-title" href="{% url 'app:post_view' post.id %}">{{ post.title | content_shorten:25 }}</a>
                             </p>
                             <h6 class="card-subtitle mb-2 text-muted ">{{ post.place_name | content_shorten:30 }}</h6>
                             <p class="card-text">{{ post.content | content_shorten:100}}</p>
