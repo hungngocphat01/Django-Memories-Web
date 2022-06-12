@@ -1,13 +1,19 @@
-from django.conf import settings
 import django.contrib.messages as messages
+from django.conf import settings
 from django.contrib.auth import logout as auth_logout
+from django.contrib.auth.mixins import LoginRequiredMixin as DefaultLoginRequiredMixin
 from django.core.exceptions import *
 from django.db import transaction
-from django.http import (Http404, HttpRequest, HttpResponseServerError)
+from django.http import Http404, HttpRequest, HttpResponseServerError
 from django.shortcuts import redirect, render
 from django.views.generic import View
 
 from .forms import *
+
+
+class LoginRequiredMixin(DefaultLoginRequiredMixin):
+    raise_exception = True
+    permission_denied_message = 'You do not have access to this content because you are not logged in.\r\nPlease go back to our homepage.'
 
 
 class HomeView(View):
@@ -19,6 +25,9 @@ class HomeView(View):
     def get(self, request: HttpRequest):
         try:
             current_user = request.user
+            if not current_user.is_authenticated:
+                return redirect('app:login')
+
             posts = Post.objects.filter(user__username=current_user.username)
 
             return render(request, self.template_name, {
@@ -56,7 +65,7 @@ class LoginView(View):
             return HttpResponseServerError()
 
 
-class LogoutView(View):
+class LogoutView(LoginRequiredMixin, View):
     """
     View handling logout request
     """
@@ -71,7 +80,7 @@ class LogoutView(View):
             return HttpResponseServerError()
 
 
-class BasePostCreateEditView(View):
+class BasePostCreateEditView(LoginRequiredMixin, View):
     """
     Base method for creating and editing a post
     """
@@ -186,7 +195,7 @@ class PostEditView(BasePostCreateEditView):
                 raise e
             return HttpResponseServerError()
 
-class PostView(View):
+class PostView(LoginRequiredMixin, View):
     """
     View presenting content of a post
     """
@@ -210,7 +219,7 @@ class PostView(View):
         except Exception as e:
             raise 
 
-class PostDelete(View):
+class PostDelete(LoginRequiredMixin, View):
     """
     View handling post deletion
     """

@@ -1,6 +1,6 @@
 .env
 db.sqlite3
-migrations
+static_root
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
