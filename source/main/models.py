@@ -1,13 +1,16 @@
 import traceback
 import facebook
 import logging
+import io
+import urllib.request as request
 from django.db import models
+from django.core.files.base import ContentFile, File
 from django.contrib.auth.models import User
 from django.contrib.auth import user_logged_in
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from location_field.models.plain import PlainLocationField
 from social_django.models import UserSocialAuth
+from location_field.models.plain import PlainLocationField
 
 
 logger = logging.getLogger(__name__)
@@ -15,20 +18,23 @@ logger = logging.getLogger(__name__)
 
 class Profile(models.Model):
     user = models.OneToOneField(to=User, on_delete=models.CASCADE)
-    avatar_link = models.TextField(null=True)
+    avatar_img = models.ImageField(upload_to='user_avatar', null=True, blank=True)
 
     @property
     def avatar_url(self):
-        if self.avatar_link:
-            return self.avatar_link
+        if self.avatar_img:
+            return self.avatar_img.url
         else:
-            return ''
+            # Facebook's "default" avatar link
+            return 'http://graph.facebook.com/111/picture?type=small'
 
-    @staticmethod
-    def update_avatar_url(user):
+    def update_avatar_url(self):
+        """
+        Method handling updating this profile's avatar picture
+        """
         try:
             # Get user access token from server database
-            auth = UserSocialAuth.objects.get(user_id=user.id)
+            auth = UserSocialAuth.objects.get(user_id=self.user.id)
             auth_extra_data = auth.extra_data
             access_token = auth_extra_data['access_token']
             fb_user_id = auth_extra_data['id']
@@ -39,14 +45,17 @@ class Profile(models.Model):
             # Get avatar information
             avatar_data = graph.get_object(id=fb_user_id, fields='picture')
             avatar_link = avatar_data['picture']['data']['url']
-            logger.info('Avatar link acquired')
+            
+            # Read avatar to server's RAM
+            img_response = request.urlretrieve(avatar_link)
+            img_filename = img_response[0]
 
-            # Save avatar information to server database
-            profile = Profile.objects.get(user=user)
-            profile.avatar_link = avatar_link
-            profile.save()
+            # Save to blob storage
+            with open(img_filename, 'rb') as f:
+                self.avatar_img.save(str(fb_user_id), File(f))
+            
         except Exception as e:
-            logger.error('Cannot fetch profile picture link for user: %d', user.id)
+            logger.error('Cannot fetch profile picture link for user: %d', self.user.id)
             logger.error(traceback.format_exc())
 
 
@@ -60,11 +69,6 @@ def create_profile_signal(sender, instance, created, **kwargs):
     if hasattr(instance, 'profile'):
         instance.profile.save()
 
-
-# When user logs in: update profile image path
-@receiver(user_logged_in)
-def login_update_profile_pic(sender, request, user, **kwargs):
-    Profile.update_avatar_url(user)
 
 
 class Post(models.Model):
@@ -89,17 +93,11 @@ class Post(models.Model):
         return 'https://picsum.photos/1000/500'
 
 
-# Database trigger when a post is deleted: delete corresponding blob on S3
-@receiver(post_delete, sender=Post)
-def auto_delete_s3_post(sender, instance, **kwargs):
-    if instance.image:
-        instance.image.delete(save=False)
-
-
-
 # Updates the user profile picture after user authentication
 def profile_picture_update_handler(strategy, user, response, details,
                          is_new=False,*args,**kwargs):
     logger.info('End of authentication process')
     logger.info(f'User id: {user}')
-    Profile.update_avatar_url(user)
+    
+    profile = Profile.objects.get(user=user)
+    profile.update_avatar_url()
