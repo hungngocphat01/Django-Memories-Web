@@ -27,13 +27,14 @@ class Post(models.Model):
                              to=User, on_delete=models.CASCADE)
     title = models.CharField(verbose_name='Post title', max_length=100)
     content = models.TextField(verbose_name='Post content')
-    image = models.ImageField(verbose_name='Image', upload_to='post_images', null=True, blank=True)
-    place_name = models.CharField(verbose_name='Place name', max_length=255, default='')
+    image = models.ImageField(verbose_name='Image',
+                              upload_to='post_images', null=True, blank=True, help_text='If you do not provide an image, a random image will be shown when displaying this post.')
+    place_name = models.CharField(verbose_name='Place name', max_length=255,
+                                  default='', help_text='Enter some text here, and the map below will change')
     location = PlainLocationField(
-        based_fields=['place_name'], default='10.762622,106.660172')
+        based_fields=['place_name'], default='10.762622,106.660172', help_text='You can zoom, click on the map to  select a location')
     date_created = models.DateField(
         verbose_name='Date created', auto_now_add=True)
-
 
     @property
     def img_url(self):
