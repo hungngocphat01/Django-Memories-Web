@@ -1,0 +1,13 @@
+# Run this project in the local environment
+version: '3.1'
+
+services:
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 123456 
+    volumes:
+      - hnp-memories-volume:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
