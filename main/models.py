@@ -1,16 +1,24 @@
-import boto3
-from statistics import mode
+import facebook
+import json
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth import user_logged_in
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from location_field.models.plain import PlainLocationField
+from social_django.models import UserSocialAuth
 
 
 class Profile(models.Model):
     user = models.OneToOneField(to=User, on_delete=models.CASCADE)
-    avatar_url = models.TextField(null=True)
+    avatar_link = models.TextField(null=True)
 
+    @property
+    def avatar_url(self):
+        if self.avatar_link:
+            return self.avatar_link
+        else:
+            return ''
 
 # Database trigger when a new user is created
 @receiver(post_save, sender=User)
@@ -18,8 +26,30 @@ def create_profile_signal(sender, instance, created, **kwargs):
     # If a new user is created: create a new profile for it
     if created:
         Profile.objects.create(user=instance)
+
     if hasattr(instance, 'profile'):
         instance.profile.save()
+
+
+# When user logs in: update profile image path
+@receiver(user_logged_in)
+def update_profile_pic(sender, request, user, **kwargs):
+    # Get user access token from server database
+    auth = UserSocialAuth.objects.get(user_id=user.id)
+    auth_extra_data = auth.extra_data
+    access_token = auth_extra_data['access_token']
+    fb_user_id = auth_extra_data['id']
+    
+    # Intialize facebook graph API
+    graph = facebook.GraphAPI(access_token=access_token)
+    # Get avatar information
+    avatar_data = graph.get_object(id=fb_user_id, fields='picture')
+    avatar_link = avatar_data['picture']['data']['url']
+
+    # Save avatar information to server database
+    profile = Profile.objects.get(user=user)
+    profile.avatar_link = avatar_link
+    profile.save()
 
 
 class Post(models.Model):

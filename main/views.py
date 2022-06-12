@@ -208,9 +208,7 @@ class PostView(View):
         except ObjectDoesNotExist:
             raise Http404()
         except Exception as e:
-            if settings.DEBUG:
-                raise e
-            return HttpResponseServerError()
+            raise 
 
 class PostDelete(View):
     """
@@ -233,5 +231,7 @@ class PostDelete(View):
         except ObjectDoesNotExist:
             raise Http404()
         except Exception as e:
+            if settings.DEBUG:
+                raise e
             return HttpResponseServerError()
         
