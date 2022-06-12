@@ -30,7 +30,7 @@ SECRET_KEY = os.environ['DJANGO_SECRET']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.environ['DJANGO_DEBUG']))
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'hnpmemories.herokuapp.com']
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1', 'hnpmemories.herokuapp.com']
 
 
 # Application definition

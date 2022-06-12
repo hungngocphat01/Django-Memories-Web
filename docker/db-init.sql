@@ -1,0 +1,3 @@
+CREATE USER memories WITH PASSWORD '123456';
+CREATE DATABASE memories_hnp OWNER memories;
+GRANT ALL PRIVILEGES ON DATABASE memories_hnp TO memories;
