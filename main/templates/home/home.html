@@ -2,7 +2,7 @@
 {% load custom_tags %}
 {% load static %}
 
-{% block content %}
+{% block header %}
     <div class="container-fluid">
         <div class="hero">
             <img src="https://picsum.photos/1000/300?blur=5" class="flex-1 hero-img"/>
@@ -14,15 +14,16 @@
                 <div class="mx-3 my-4">
                     <div id="quote-content">
                     </div>
-    
+
                     <div id="quote-author">
                     </div>
                 </div>
             </div>
         </div>
     </div>
+{% endblock header %}
 
-    {% include 'base/errors.html' %}
+{% block content %}
     <div class="container py-4 h-100 w-100 d-flex justify-content-center">
         {% if posts %}
             <div class="grid-container">

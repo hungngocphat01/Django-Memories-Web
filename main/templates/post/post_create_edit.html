@@ -1,13 +1,15 @@
 {% extends 'base/base.html' %}
 {% load django_bootstrap5 %}
 
-{% block content %}
+{% block header %}
     <div class="container-fluid bg-primary">
         <div class="container py-5 text-light">
             <h3>{{ action }} post</h3>
         </div>
     </div>
-    {% include 'base/errors.html' %}
+{% endblock header %}
+
+{% block content %}
     <div class="container pt-3">
         <div class="py-4">
             <form action="" method="post" enctype="multipart/form-data">

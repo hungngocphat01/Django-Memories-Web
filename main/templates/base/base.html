@@ -17,6 +17,12 @@
 </head>
 <body>
     {% include 'base/navbar.html' %}
+
+    {% block header %}
+    {% endblock header %}
+
+    {% include 'base/errors.html' %}
+    
     {% block content %}
     {% endblock content %}
 </body>
