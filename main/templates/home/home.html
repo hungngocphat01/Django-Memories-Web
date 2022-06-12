@@ -14,9 +14,11 @@
                 {% for post in posts %}
                     <div class="grid-item d-flex">
                         <div class="card mx-lg-3 my-3 flex-1" style="width:18rem;">
-                          <img src="{{ post.image.url }}" class="card-img-top crop-img" alt="">
+                          <img src="{{ post.img_url }}" class="card-img-top crop-img" alt="">
                           <div class="card-body">
-                            <h5 class="card-title">{{ post.title | content_shorten:20 }}</h5>
+                            <p>
+                                <a class="h5 text-decoration-none card-title" href="{% url 'app:post_view' post.id %}">{{ post.title | content_shorten:20 }}</a>
+                            </p>
                             <h6 class="card-subtitle mb-2 text-muted ">{{ post.place_name | content_shorten:30 }}</h6>
                             <p class="card-text">{{ post.content | content_shorten:100}}</p>
                           </div>

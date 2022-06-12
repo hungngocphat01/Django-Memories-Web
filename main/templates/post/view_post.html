@@ -1,0 +1,54 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block content %}
+    <link rel = "stylesheet" href = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+
+    <div class="container-fluid">
+        <div class="hero">
+            <img src="{{ post.img_url }}" class="flex-1 hero-img"/>
+            <div class="hero-text">
+                <h2>{{ post.title }}</h2>
+
+                <h4>{{ post.place_name }}</h4>
+
+                <div>{{ post.date_created }}</div>
+
+                <span class="d-none" id="post-location">{{ post.location }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-md-8">
+                {{ post.content }}
+            </div>
+
+            <div class="col-md-4">
+                <div>
+                    <div id="leaflet-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+
+    <script>
+        let locationStr = $('#post-location').text();
+        let [lat, lon] = locationStr.split(',');
+        
+        let mapOptions = {
+            center: [lat, lon],
+            zoom: 15,
+        }
+
+        
+        let map = new L.map('leaflet-container', mapOptions);
+        let layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+        
+        map.addLayer(layer);
+        let marker = L.marker([lat, lon]).addTo(map);
+    </script>
+{% endblock content %}
