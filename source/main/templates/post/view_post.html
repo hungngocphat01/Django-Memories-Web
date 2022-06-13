@@ -69,8 +69,14 @@
               Do you want to delete this post? This action cannot be undone.
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cancel</button>
-              <a class="btn btn-danger" href="{% url 'app:post_delete' post.id %}" role="button" class="btn btn-danger">Delete this post</a>
+              <div class="modal-footer-control">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cancel</button>
+                <a class="btn btn-danger" id="btn-delete" href="{% url 'app:post_delete' post.id %}" role="button" class="btn btn-danger">Delete this post</a>
+              </div>
+
+              <div class="spinner-border d-none" id="delete-spinner" role="status">
+                <span class="sr-only"></span>
+              </div>
             </div>
           </div>
         </div>
@@ -79,6 +85,7 @@
     <script src = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
 
     <script>
+        // Get location data from form
         let locationStr = $('#post-location').text();
         let [lat, lon] = locationStr.split(',');
         
@@ -87,11 +94,21 @@
             zoom: 15,
         }
 
-        
+        // Create new map and add marker
         let map = new L.map('leaflet-container', mapOptions);
         let layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
         
         map.addLayer(layer);
         let marker = L.marker([lat, lon]).addTo(map);
+
+        
+        // Hides the delete button after user clicks delete
+        // If user clicks twice, 2 requests will be sent to the server
+        // Causes no damage, but client will show error 404 (because the post was deleted before)
+        // This is a temporary solution
+        $("#btn-delete").on("click", function() {
+          $(".modal-footer-control").hide();
+          $("#delete-spinner").removeClass("d-none");
+        });
     </script>
 {% endblock content %}

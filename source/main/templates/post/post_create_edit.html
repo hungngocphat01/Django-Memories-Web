@@ -12,19 +12,32 @@
 {% block content %}
     <div class="container pt-3">
         <div class="py-4">
-            <form action="" method="post" enctype="multipart/form-data">
+            <form action="" method="post" enctype="multipart/form-data" id="post-form">
                 <div>
                 </div>
                 {% csrf_token %}
                 {% bootstrap_form form %}
                 {% bootstrap_button button_type="submit" content="OK" %}
+                <div class="spinner-border d-none" id="form-spinner" role="status">
+                    <span class="sr-only"></span>
+                </div>
             </form>
         </div>
     </div>
 
     <script>
+        // Hides the text box of the "location" (map) field
+        // For aesthetic purposes, no sensitive data here
         $("document").ready(function() {
             $("#id_location").hide();
+        });
+
+        // After user clicks "OK", hide the button and replace with loading icon
+        // If user clicks twice, 2 requests will be sent to the server
+        // This is a temporary solution
+        $("#post-form").on("submit", function() {
+            $("#post-form > button[type=submit]").hide();
+            $("#form-spinner").removeClass("d-none");
         });
     </script>
 {% endblock content %}
