@@ -42,6 +42,7 @@ AWS_S3_REGION_NAME=
 ```
 
 ## Run this project locally
-- Setup neccessary environment variables in `source/.env`.
+- Setup neccessary environment variables in `docker/django/.django.env`.
 - Create a volume for the database: `docker volume create hnp-memories-postgres`.
 - Run `docker compose up`.  
+- Access `localhost:8000`.
