@@ -16,24 +16,80 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Profile',
+            name="Profile",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('avatar_link', models.TextField(null=True)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("avatar_link", models.TextField(null=True)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Post',
+            name="Post",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=100, verbose_name='Post title')),
-                ('content', models.TextField(verbose_name='Post content')),
-                ('image', models.ImageField(blank=True, help_text='If you do not provide an image, a random image will be shown when displaying this post.', null=True, upload_to='post_images', verbose_name='Image')),
-                ('place_name', models.CharField(default='', help_text='Enter some text here, and the map below will change', max_length=255, verbose_name='Place name')),
-                ('location', location_field.models.plain.PlainLocationField(default='10.762622,106.660172', help_text='You can zoom, click on the map to  select a location', max_length=63)),
-                ('date_created', models.DateField(auto_now_add=True, verbose_name='Date created')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='Username')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=100, verbose_name="Post title")),
+                ("content", models.TextField(verbose_name="Post content")),
+                (
+                    "image",
+                    models.ImageField(
+                        blank=True,
+                        help_text="If you do not provide an image, a random image will be shown when displaying this post.",
+                        null=True,
+                        upload_to="post_images",
+                        verbose_name="Image",
+                    ),
+                ),
+                (
+                    "place_name",
+                    models.CharField(
+                        default="",
+                        help_text="Enter some text here, and the map below will change",
+                        max_length=255,
+                        verbose_name="Place name",
+                    ),
+                ),
+                (
+                    "location",
+                    location_field.models.plain.PlainLocationField(
+                        default="10.762622,106.660172",
+                        help_text="You can zoom, click on the map to  select a location",
+                        max_length=63,
+                    ),
+                ),
+                (
+                    "date_created",
+                    models.DateField(auto_now_add=True, verbose_name="Date created"),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Username",
+                    ),
+                ),
             ],
         ),
     ]
