@@ -12,14 +12,14 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 from urllib.parse import urlparse
 from social_core.pipeline import DEFAULT_AUTH_PIPELINE
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
-# load_dotenv(os.path.join(BASE_DIR, '.env'))
+# load_dotenv(os.path.join(BASE_DIR, '.heroku.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/

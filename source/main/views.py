@@ -6,14 +6,19 @@ from django.core.exceptions import *
 from django.db import transaction
 from django.http import Http404, HttpRequest, HttpResponseServerError
 from django.shortcuts import redirect, render
-from django.views.generic import View
+from django.views.generic import View, ListView
+from django.core.paginator import Paginator
+
 
 from .forms import *
 
 
 class LoginRequiredMixin(DefaultLoginRequiredMixin):
     raise_exception = True
-    permission_denied_message = "You do not have access to this content because you are not logged in.\r\nPlease go back to our homepage."
+    permission_denied_message = (
+        "You do not have access to this content because you are not logged in"
+        "\r\nPlease go back to our homepage."
+    )
 
 
 class HomeView(View):
@@ -22,19 +27,30 @@ class HomeView(View):
     """
 
     template_name = "home/home.html"
+    MAX_POSTS = 9
 
     def get(self, request: HttpRequest):
         try:
+            # If user not signed in, redirect to login page
             current_user = request.user
             if not current_user.is_authenticated:
                 return redirect("app:login")
 
-            posts = Post.objects.filter(user__username=current_user.username)
+            # Get all posts for this user
+            posts = Post.objects.filter(user=current_user).order_by("-date_created")
+            paginator = Paginator(posts, self.MAX_POSTS)
+
+            # Filter by page
+            page_number = request.GET.get("page")
+            print(page_number)
+            if not page_number:
+                page_number = 1
+            page_obj = paginator.get_page(page_number)
 
             return render(
                 request,
                 self.template_name,
-                {"posts": posts, "title": "Home", "current_user": current_user},
+                {"page_obj": page_obj, "title": "Home", "current_user": current_user},
             )
         except Exception as e:
             if settings.DEBUG:
@@ -53,7 +69,7 @@ class LoginView(View):
         try:
             current_user = request.user
 
-            # Don't let the user access the login page if they has logged in
+            # Don't let the user access the login page if they have logged in
             if current_user.is_authenticated:
                 return redirect("app:home")
 
@@ -90,7 +106,7 @@ class BasePostCreateEditView(LoginRequiredMixin, View):
 
     template_name = "post/post_create_edit.html"
 
-    def __process_validation_err(self, request, form):
+    def _process_validation_err(self, request, form):
         # Get all errors from form
         form_errors = form.errors.get_json_data()
         # Send error messages to client
@@ -132,6 +148,7 @@ class PostCreateView(BasePostCreateEditView):
         try:
             # Create new form
             form = PostForm(request.POST, request.FILES)
+
             # Validate and append to DB
             if form.is_valid():
                 with transaction.atomic():
@@ -141,9 +158,11 @@ class PostCreateView(BasePostCreateEditView):
                 messages.success(request, "Successfully added a new post")
                 return redirect("app:home")
             else:
-                raise ValidationError()
+                raise ValidationError(
+                    "The data you have submitted is invalid. Please try again."
+                )
         except ValidationError:
-            return self.__process_validation_err(request, form)
+            return self._process_validation_err(request, form)
         except Exception as e:
             if settings.DEBUG:
                 raise e
@@ -157,9 +176,11 @@ class PostEditView(BasePostCreateEditView):
 
     def get(self, request: HttpRequest, post_id):
         try:
+            # Get requested post
             current_user = request.user
             post = Post.objects.get(id=post_id, user__username=current_user.username)
 
+            # Populate form with item and send to client
             form = PostForm(instance=post)
             return render(
                 request,
@@ -184,8 +205,9 @@ class PostEditView(BasePostCreateEditView):
             # Get corresponding post
             post = Post.objects.get(id=post_id, user__username=current_user.username)
 
-            # Create new form
+            # Populate form with edited data from client
             form = PostForm(request.POST, request.FILES, instance=post)
+
             # Validate and append to DB
             if form.is_valid():
                 print(request.FILES)
@@ -196,11 +218,13 @@ class PostEditView(BasePostCreateEditView):
                 messages.success(request, "Successfully edit the new post")
                 return redirect("app:post_view", post_id)
             else:
-                raise ValidationError()
+                raise ValidationError(
+                    "The data you have submitted is invalid. Please try again."
+                )
         except ObjectDoesNotExist:
             raise Http404()
         except ValidationError:
-            return self.__process_validation_err(request, form)
+            return self._process_validation_err(request, form)
         except Exception as e:
             if settings.DEBUG:
                 raise e
@@ -229,7 +253,7 @@ class PostView(LoginRequiredMixin, View):
         except ObjectDoesNotExist:
             raise Http404()
         except Exception as e:
-            raise
+            raise e
 
 
 class PostDelete(LoginRequiredMixin, View):

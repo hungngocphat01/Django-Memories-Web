@@ -24,29 +24,61 @@
 {% endblock header %}
 
 {% block content %}
-    <div class="container py-4 h-100 w-100 d-flex justify-content-center">
-        {% if posts %}
-            <div class="grid-container">
-                {% for post in posts %}
-                    <div class="grid-item">
-                        <div class="card">
-                          <img src="{{ post.img_url }}" class="card-img-top crop-img" alt="">
-                          <div class="card-body">
-                            <p>
-                                <a class="h5 text-decoration-none card-title" href="{% url 'app:post_view' post.id %}">{{ post.title | content_shorten:25 }}</a>
-                            </p>
-                            <h6 class="card-subtitle mb-2 text-muted ">{{ post.place_name | content_shorten:30 }}</h6>
-                            <p class="card-text">{{ post.content | content_shorten:100}}</p>
-                          </div>
+    <div class="container py-4 h-100 w-100 d-flex flex-column justify-content-start align-items-center">
+        <div class="grid-container">
+            {% for post in page_obj %}
+                <div class="grid-item">
+                    <div class="card">
+                        <img src="{{ post.img_url }}" class="card-img-top crop-img" alt="">
+                        <div class="card-body">
+                        <p>
+                            <a class="h5 text-decoration-none card-title" href="{% url 'app:post_view' post.id %}">{{ post.title | content_shorten:25 }}</a>
+                        </p>
+                        <h6 class="card-subtitle mb-2 text-muted ">{{ post.place_name | content_shorten:30 }}</h6>
+                        <p class="card-text">{{ post.content | content_shorten:100}}</p>
                         </div>
                     </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="flex-1">
-                <p>You have no memories yet. Let's get started by <a href="{% url 'app:post_create' %}">adding one</a>!</p>
-            </div>
-        {% endif %}
+                </div>
+            {% empty %}
+                <div class="flex-1">
+                    <p>You have no memories yet. Let's get started by <a href="{% url 'app:post_create' %}">adding one</a>!</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="py-3 d-flex justify-content-center">
+            <nav>
+                <ul class="pagination">
+                    <li class="page-item">
+                        {% if page_obj.has_previous %}
+                            <a class="page-link" href="?page=1">&laquo; first</a>
+                        {% endif %}
+                    </li>
+
+                    <li class="page-item">
+                        {% if page_obj.has_previous %}
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">previous</a>
+                        {% endif %}
+                    </li>
+    
+                    <li class="page-item current active">
+                        <a class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</a>
+                    </li>
+                    
+                    <li class="page-item">
+                        {% if page_obj.has_next %}
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">next</a>
+                        {% endif %}
+                    </li>
+
+                    <li class="page-item">
+                        {% if page_obj.has_next %}
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
 
     <script src="{% static 'js/quote.js' %}"></script>
