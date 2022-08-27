@@ -3,7 +3,8 @@
 ## Description
 This is a simple "image keeper" project created with Django 4.0.3 for practicing purposes.
 
-A live demo has been deployed to Heroku and can be found here: https://hnpmemories.herokuapp.com/
+A live demo has been deployed to Heroku and can be found here: ~~https://hnpmemories.herokuapp.com/~~  
+Because I don't know if I will be charged for keeping S3 running like this or not, I shutted down the live demo website. 
 
 Some demo images can be found in the `demo` directory.
 
@@ -25,7 +26,7 @@ Features:
 - Lorem Picsum
 - Other Python dependencies listed in `requirements.txt`
 
-## Environment
+## Deployment
 
 Following environment variables must be declared in a file called `.env` placed in the same directory as the `manage.py` file.
 
@@ -42,7 +43,9 @@ AWS_S3_REGION_NAME=
 ```
 
 ## Run this project locally
-- Setup neccessary environment variables in `docker/django/.django.env`.
+- Create your Meta dev app, setup OAuth.
+- Create an S3 bucket.
 - Create a volume for the database: `docker volume create hnp-memories-postgres`.
+- Setup neccessary environment variables in `docker/django/.django.env`.
 - Run `docker compose up`.  
 - Access `localhost:8000`.
